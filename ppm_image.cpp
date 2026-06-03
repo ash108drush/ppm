@@ -3,6 +3,7 @@
 #include <array>
 #include <fstream>
 #include <string_view>
+#include <algorithm>
 
 using namespace std;
 
@@ -12,7 +13,37 @@ static const string_view PPM_SIG = "P6"sv;
 static const int PPM_MAX = 255;
 
 // реализуйте эту функцию самостоятельно
-bool SavePPM(const Path& file, const Image& image);
+bool SavePPM(const Path& file, const Image& image){
+    ofstream ofs(file, ios::binary);
+    const int w = image.GetWidth();
+    const int h = image.GetHeight();
+    ofs << PPM_SIG << std::endl
+        << w << ' '
+        << h  << std::endl
+        << PPM_MAX << std::endl;
+    //std::vector<char> buff(image.GetWidth() * 3);
+    int arr[3];
+    for (int y = 0; y < h; ++y) {
+        std::copy(image.GetLine(y), image.GetLine(y) + image.GetStep() *3, std::begin(arr));
+
+    }
+
+   /* for (int y = 0; y < h; ++y) {
+        Color* line = result.GetLine(y);
+        ifs.read(buff.data(), w * 3);
+
+        for (int x = 0; x < w; ++x) {
+            line[x].r = static_cast<char>(buff[x * 3 + 0]);
+            line[x].g = static_cast<char>(buff[x * 3 + 1]);
+            line[x].b = static_cast<char>(buff[x * 3 + 2]);
+        }
+    }
+    */
+
+
+
+    return false;
+}
 
 Image LoadPPM(const Path& file) {
     // открываем поток с флагом ios::binary
