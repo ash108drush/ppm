@@ -15,34 +15,35 @@ static const int PPM_MAX = 255;
 // реализуйте эту функцию самостоятельно
 bool SavePPM(const Path& file, const Image& image){
     ofstream ofs(file, ios::binary);
+    if (!ofs) {
+        return false;
+    }
     const int w = image.GetWidth();
     const int h = image.GetHeight();
-    ofs << PPM_SIG << std::endl
+    const int step = image.GetStep();
+    ofs << PPM_SIG << '\n'
         << w << ' '
-        << h  << std::endl
-        << PPM_MAX << std::endl;
-    //std::vector<char> buff(image.GetWidth() * 3);
-    int arr[3];
+        << h  << '\n'
+        << PPM_MAX << '\n';
+    //std::vector<byte> buff(image.GetWidth() * 3);
+    //std::array<byte> buf[1024];
+    const Color* begin = image.GetLine(0);
     for (int y = 0; y < h; ++y) {
-        std::copy(image.GetLine(y), image.GetLine(y) + image.GetStep() *3, std::begin(arr));
+        std::vector<char> buff(w * 3);
+        std::fill(buff.begin(),buff.end(),static_cast<char>(std::byte{0}));
+        for(int x = 0; x < w *3 ;++x ){
+            if(x < w){
+                const Color* pixel = reinterpret_cast<const Color*>(begin + (y * step +x));
+                buff[x * 3 + 0] = (static_cast<char>(pixel->r));
+                buff[x * 3  + 1] = (static_cast<char>(pixel->g));
+                buff[x * 3 + 2] = (static_cast<char>(pixel->b));
+            }
 
-    }
-
-   /* for (int y = 0; y < h; ++y) {
-        Color* line = result.GetLine(y);
-        ifs.read(buff.data(), w * 3);
-
-        for (int x = 0; x < w; ++x) {
-            line[x].r = static_cast<char>(buff[x * 3 + 0]);
-            line[x].g = static_cast<char>(buff[x * 3 + 1]);
-            line[x].b = static_cast<char>(buff[x * 3 + 2]);
-        }
-    }
-    */
-
-
-
-    return false;
+        } //end x
+        ofs.write(buff.data(), buff.size());
+    } //end y
+    ofs.close();
+    return true;
 }
 
 Image LoadPPM(const Path& file) {
