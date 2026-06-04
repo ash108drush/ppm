@@ -100,8 +100,8 @@ void NegateInplace(Image &image){
             if(x < w){
                 Color* pixel = reinterpret_cast<Color*>(begin + (y * step +x));
                 pixel->r = Negate(pixel->r);
-                pixel->g = Negate(pixel->r);
-                pixel->b = Negate(pixel->r);
+                pixel->g = Negate(pixel->g);
+                pixel->b = Negate(pixel->b);
             }
 
         } //end x
